@@ -9,13 +9,12 @@ var reusableVariablesSheetName = packageSheet.getRange(6,2).getValue()
 
 //getting array from Array sheet
 function makeObjectsArray() {
-
   var reusableVariablesSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(reusableVariablesSheetName)
   var reusableVariablesData = reusableVariablesSheet.getDataRange()
   var variablesLastColumn = reusableVariablesData.getLastColumn()
   var variablesLastRow = reusableVariablesData.getLastRow()
   
-   //make rangeVariablesArray
+  //make rangeVariablesArray
   var rangeArrayRange = reusableVariablesSheet.getRange(3,1,variablesLastRow, 2)
   var rangeArrayValues = rangeArrayRange.getValues()
   var rangeVariablesArray = []
@@ -25,7 +24,7 @@ function makeObjectsArray() {
       rangeVariablesArray[i]['value'] = rangeArrayValues[i][1]
     }
 
-   //make queryVariablesArray
+  //make queryVariablesArray
   var queryArrayRange = reusableVariablesSheet.getRange(3,4,variablesLastRow, 2)
   var queryArrayValues = queryArrayRange.getValues()
   var queryVariablesArray = []
@@ -34,8 +33,8 @@ function makeObjectsArray() {
       queryVariablesArray[i]['name'] = queryArrayValues[i][0]
       queryVariablesArray[i]['value'] = queryArrayValues[i][1]
     }
-//arrayRangeValues is the referenced array
-   //make sourceWBVariablesArray
+
+  //make sourceWBVariablesArray
   var sourceWBArrayRange = reusableVariablesSheet.getRange(3,7,variablesLastRow, 2)
   var sourceWBArrayValues = sourceWBArrayRange.getValues()
   var sourceWBVariablesArray = []
@@ -52,40 +51,39 @@ function makeObjectsArray() {
   var arrayRangeValues = arrayRange.getValues()
 
 //new dynamicObjectsArray
-  var dynamicObjectsArray = []
-  for ( i = 0; i < lastRow - 1; i++){
-    dynamicObjectsArray.push({})
-    dynamicObjectsArray[i]['name'] = arrayRangeValues[i][0]
-    loop1:
-      for ( j = 0; j < rangeVariablesArray.length; j++) {
-      Logger.log(rangeVariablesArray[j])
-      if (rangeVariablesArray[j]['name'] === arrayRangeValues[i][1]) {
-        dynamicObjectsArray[i]['range'] = rangeVariablesArray[j]['value']
-        break loop1
-      } else {
-      dynamicObjectsArray[i]['range'] = arrayRangeValues[i][1]
-      }
-      }
-    loop2:
-      for ( j = 0; j < queryVariablesArray.length; j++) {
-      if (queryVariablesArray[j]['name'] === arrayRangeValues[i][2]) {
-        dynamicObjectsArray[i]['query'] = queryVariablesArray[j]['value']
-        break loop2
-      } else {
-      dynamicObjectsArray[i]['query'] = arrayRangeValues[i][2]
-      }
-      }
-    loop3:
-      for ( j = 0; j < sourceWBVariablesArray.length; j++) {
-      if (sourceWBVariablesArray[j]['name'] === arrayRangeValues[i][3]) {
-        dynamicObjectsArray[i]['sourceWB'] = sourceWBVariablesArray[j]['value']
-        break loop3
-      } else {
-      dynamicObjectsArray[i]['sourceWB'] = arrayRangeValues[i][3]
-      }
-      }
+var dynamicObjectsArray = []
+for ( i = 0; i < lastRow - 1; i++){
+  dynamicObjectsArray.push({})
+  dynamicObjectsArray[i]['name'] = arrayRangeValues[i][0]
+  loop1:
+    for ( j = 0; j < rangeVariablesArray.length; j++) {
+    if (rangeVariablesArray[j]['name'] === arrayRangeValues[i][1]) {
+      dynamicObjectsArray[i]['range'] = rangeVariablesArray[j]['value']
+      break loop1
+    } else {
+    dynamicObjectsArray[i]['range'] = arrayRangeValues[i][1]
     }
-    return dynamicObjectsArray
+    }
+  loop2:
+    for ( j = 0; j < queryVariablesArray.length; j++) {
+    if (queryVariablesArray[j]['name'] === arrayRangeValues[i][2]) {
+      dynamicObjectsArray[i]['query'] = queryVariablesArray[j]['value']
+      break loop2
+    } else {
+    dynamicObjectsArray[i]['query'] = arrayRangeValues[i][2]
+    }
+    }
+  loop3:
+    for ( j = 0; j < sourceWBVariablesArray.length; j++) {
+    if (sourceWBVariablesArray[j]['name'] === arrayRangeValues[i][3]) {
+      dynamicObjectsArray[i]['sourceWB'] = sourceWBVariablesArray[j]['value']
+      break loop3
+    } else {
+    dynamicObjectsArray[i]['sourceWB'] = arrayRangeValues[i][3]
+    }
+    }
+  }
+  return dynamicObjectsArray
 }
 
 //helper function to remove extra rows at bottom of active sheet
@@ -110,21 +108,21 @@ function removeEmptyRowsDest(){
 function queryFunction() {
   var giantQuery = ''
   
-//logic to make my enormous query import function! -->
-
+  //logic to make my enormous query import function! -->
   var queryArray = []
-//call makeObjectsArray
-arrayFromSheet = makeObjectsArray()
-// array of objects statement maker
-    arrayFromSheet.forEach(function (item, itemIndex) {
-//includedOjectsArray.forEach(function (item, itemIndex) {
+
+  //call makeObjectsArray
+  arrayFromSheet = makeObjectsArray()
+
+  //array of objects statement maker
+  arrayFromSheet.forEach(function (item, itemIndex) {
     queryArray.push('QUERY(IMPORTRANGE("' + item.sourceWB + '", "' + item.name + '!' + item.range + '"), "'+ item.query + '", 0)')
   })
   giantQuery = queryArray.join("; ")
   giantQuery = "={" + giantQuery + "}"
   
   //setFormula in A1 of destination sheet
-  SpreadsheetApp.openById(destinationWorkbook).getSheetByName(destinationSheet).getRange('A1').setFormula(giantQuery)
+  SpreadsheetApp.openById(destinationWorkbook).getSheetByName(destinationSheet).getRange('A2').setFormula(giantQuery)
   //trim off empty rows
   removeEmptyRowsDest()
   }
@@ -133,7 +131,7 @@ arrayFromSheet = makeObjectsArray()
 function onOpen() {
   var ui = SpreadsheetApp.getUi()
   ui.createMenu('Data Import')
-      .addItem('Inclusive Data Import', 'queryFunction')
-      .addItem('Trim Active Sheet Trailing Rows', 'removeEmptyRowsActive')
-      .addToUi()
+    .addItem('Inclusive Data Import', 'queryFunction')
+    .addItem('Trim Active Sheet Trailing Rows', 'removeEmptyRowsActive')
+    .addToUi()
 }
