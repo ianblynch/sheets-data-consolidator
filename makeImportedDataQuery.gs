@@ -1,11 +1,11 @@
 //config sources and destination -->
 var packageSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Package')
 var testCell = packageSheet.getRange(2,1).getValue()
-var sourceWorkbook = packageSheet.getRange(2,2).getValue()
-var destinationWorkbook = packageSheet.getRange(3,2).getValue()
-var destinationSheet = packageSheet.getRange(4,2).getValue()
-var arraySheetName = packageSheet.getRange(5,2).getValue()
-var reusableVariablesSheetName = packageSheet.getRange(6,2).getValue()
+var destinationSheet = packageSheet.getRange(2,2).getValue()
+var destinationWorkbook = SpreadsheetApp.getActiveSpreadsheet().getUrl()
+Logger.log(destinationWorkbook)
+var arraySheetName = packageSheet.getRange(3,2).getValue()
+var reusableVariablesSheetName = packageSheet.getRange(4,2).getValue()
 
 //getting array from Array sheet
 function makeObjectsArray() {
@@ -97,7 +97,7 @@ function removeEmptyRowsActive(){
 }
 //helper function to remove extra rows at bottom of destination sheet
 function removeEmptyRowsDest(){
-  var sh = SpreadsheetApp.openById(destinationWorkbook).getSheetByName(destinationSheet)
+  var sh = SpreadsheetApp.openByUrl(destinationWorkbook).getSheetByName(destinationSheet)
   var maxRows = sh.getMaxRows()
   var lastRow = sh.getLastRow()
   if (maxRows !== lastRow) {
@@ -122,7 +122,7 @@ function queryFunction() {
   giantQuery = "={" + giantQuery + "}"
   
   //setFormula in A1 of destination sheet
-  SpreadsheetApp.openById(destinationWorkbook).getSheetByName(destinationSheet).getRange('A2').setFormula(giantQuery)
+  SpreadsheetApp.openByUrl(destinationWorkbook).getSheetByName(destinationSheet).getRange('A2').setFormula(giantQuery)
   //trim off empty rows
   removeEmptyRowsDest()
   }
